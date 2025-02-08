@@ -43,6 +43,7 @@
                                 };
                             })
                             requests
+                            icalendar
                         ]))
                         python312Packages.black
                     ];

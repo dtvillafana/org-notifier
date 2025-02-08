@@ -1,10 +1,11 @@
 #+TODO: TODO MEET CALL WAITING EVENT | DONE CANCELED
-#+TITLE: Event
+#+TITLE: Events
 #+AUTHOR: Mister Man
 * Events
 ** CALL house blessing
    SCHEDULED: <2025-02-07 Fri 16:00>
-** MEET wife has party
+   body text here for house blessing
+** MEET wife has party                                               :wife:
    SCHEDULED: <2025-02-07 Fri 10:00>
 ** TODO Homemade bread Fundraiser
    SCHEDULED: <2025-02-06 Thu 17:05> DEADLINE: <2024-10-31 Thu 8:00>
@@ -12,7 +13,9 @@
    SCHEDULED: <2025-02-08 Sat 10:00>
 ** DONE payment plan
    SCHEDULED: <2025-02-02 Sun>
-** EVENT House projects                                               :wife:
+** EVENT House projects                                               :house:
    DEADLINE: <2025-02-06 Thu 17:05> SCHEDULED: <2024-10-31 Thu 8:00>
-** CANCELED Call Home Insurance
+** CANCELED update Home Insurance
    SCHEDULED: <2025-01-26 Sun 23:34>
+** TODO todo no time
+** CANCELED cancled thing no time
