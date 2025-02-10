@@ -1,2 +1,4 @@
 * org-notifier
-a notification daemon for org files
+- a notification program for org files
+- intended to be run on a minutely systemd timer
+- PRs welcome
