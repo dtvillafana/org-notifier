@@ -16,7 +16,7 @@ class Notification:
     priority: str
     tags: str
     message: str
-    time: str
+    time: datetime
 
 
 @dataclass
@@ -36,11 +36,12 @@ def generate_notification_intervals() -> list[timedelta]:
 
 
 def send_ntfy(notification: Notification, url: str) -> requests.Response:
+    minutes_until: int = int((notification.time - datetime.now()).total_seconds() // 60)
     resp: requests.Response = requests.post(
         url,
         data=notification.message,
         headers={
-            "Title": f"{notification.title} @ {notification.time}",
+            "Title": f"{notification.title} {f'(in {minutes_until} minutes)' if minutes_until != 0 else ''}",
             "Priority": notification.priority,
             "Tags": notification.tags,
         },
@@ -55,7 +56,7 @@ def node_to_notification(node: OrgNode) -> Notification:
         priority=priority_map[node.priority],
         tags=",".join(node.tags),
         message=node.body if node.body.strip() else node.heading,
-        time=f'({node.scheduled.start.strftime("%Y-%m-%d %H:%M")})',
+        time=coerce_datetime(node.scheduled.start),
     )
 
 
@@ -85,7 +86,6 @@ def coerce_datetime(d: date | datetime):
 def nodes_for_notification(
     time: datetime, node: OrgRootNode, reminder_intervals: list[timedelta]
 ) -> list[OrgNode]:
-    nodes: list[OrgNode] = []
     non_empty_nodes: list[OrgNode] = list(
         filter(lambda x: x.heading.strip() != "", node)
     )
