@@ -86,8 +86,9 @@ def coerce_datetime(d: date | datetime):
 def nodes_for_notification(
     time: datetime, node: OrgRootNode, reminder_intervals: list[timedelta]
 ) -> list[OrgNode]:
+    org_nodes: list[OrgNode] = list(node[1:])
     non_empty_nodes: list[OrgNode] = list(
-        filter(lambda x: x.heading.strip() != "", node)
+        filter(lambda x: x.heading.strip() != "", org_nodes)
     )
     notification_precise_times: list[datetime] = list(
         map(lambda x: time + x, reminder_intervals)
