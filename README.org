@@ -1,4 +1,38 @@
 * org-notifier
-- a notification program for org files
-- intended to be run on a minutely systemd timer
-- PRs welcome
+  - a notification program for org files using ntfy, see [[https://ntfy.sh][ntfy.sh]]
+  - intended to be run on a minutely systemd timer
+  - packaged with nix
+  - PRs welcome!
+* development
+** starting a dev shell
+   #+BEGIN_SRC bash
+   nix develop
+   #+END_SRC
+** running tests
+   - in the devshell, run pytest
+   - after making a change, add a relevant test
+* running the notifier in docker
+** requirements
+   - a git repo containing your org files
+   - ssh access to this git repo
+   - the correct keys replaced in the [[./ssh-keys]] directory
+   - the values with warnings replaced in the flake
+   - the correct environment variables exported
+** building the docker image
+   #+BEGIN_SRC bash
+   nix build .#docker
+   #+END_SRC
+** load image into docker
+   Ensure dockerd is running
+   Load into docker:
+   #+BEGIN_SRC bash
+   docker import result/tarball/nixos-system-*.tar.xz nixos-docker
+   #+END_SRC
+   Boots into systemd
+   #+BEGIN_SRC bash
+   docker run --privileged -it nixos-docker /init
+   #+END_SRC
+   Log into the container
+   #+BEGIN_SRC bash
+   docker exec -it <container-name> /run/current-system/sw/bin/bash
+   #+END_SRC
