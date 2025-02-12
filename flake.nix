@@ -43,8 +43,12 @@
                                 };
                             })
                             requests
+                            dateutil
+                            pytest
+                            shutil
                         ]))
                         python312Packages.black
+                        python312Packages.pytest
                     ];
                 };
             });

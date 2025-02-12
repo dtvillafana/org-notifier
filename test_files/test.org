@@ -2,9 +2,9 @@
 #+TITLE: Events
 #+AUTHOR: Mister Man
 * Events
-** CALL house blessing
-   SCHEDULED: <2025-02-08 Sat 14:45>
-   body text here for house blessing
+** CALL Test org node
+   SCHEDULED: <2025-02-04 Tue 12:15 ++2w>
+   body text here for test org node
 ** DONE payment plan
    SCHEDULED: <2025-02-02 Sun>
 ** EVENT House projects                                               :house:
