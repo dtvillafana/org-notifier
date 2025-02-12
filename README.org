@@ -23,7 +23,9 @@
    nix build .#docker
    #+END_SRC
 ** load image into docker
-   Ensure dockerd is running \
+   Ensure dockerd is running
+
+
    Load into docker:
    #+BEGIN_SRC bash
    docker import result/tarball/nixos-system-*.tar.xz nixos-docker
