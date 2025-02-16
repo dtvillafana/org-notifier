@@ -32,106 +32,139 @@ def ntfy_url() -> str:
 
 
 @pytest.fixture
-def now() -> datetime:
+def test_time() -> datetime:
     return datetime.now()
 
 
 @pytest.fixture
-def test_org_file(temp_dir: Path) -> Path:
-    now = datetime.now()
+def test_org_file(temp_dir: Path, test_time: datetime) -> Path:
     org_content = f"""
 * TODO Test org node 1
-  SCHEDULED: <{(now - timedelta(weeks=1)).strftime('%Y-%m-%d %a %H:%M')} ++1w>
+  SCHEDULED: <{(test_time - timedelta(weeks=1)).strftime('%Y-%m-%d %a %H:%M')} ++1w>
   body text here for test org node 1 - should notify
 * TODO Test org node 2
-  SCHEDULED: <{(now - timedelta(weeks=1)).strftime('%Y-%m-%d %a %H:%M')} ++2w>
+  SCHEDULED: <{(test_time - timedelta(weeks=1)).strftime('%Y-%m-%d %a %H:%M')} ++2w>
   body text here for test org node 2 - should not notify!
 * TODO Test org node 3
-  SCHEDULED: <{(now - relativedelta(months=1)).strftime('%Y-%m-%d %a %H:%M')} ++1m>
+  SCHEDULED: <{(test_time - relativedelta(months=1)).strftime('%Y-%m-%d %a %H:%M')} ++1m>
   body text here for test org node 3 - should notify
 * TODO Test org node 4
-  SCHEDULED: <{(now - relativedelta(months=1)).strftime('%Y-%m-%d %a %H:%M')} ++2m>
+  SCHEDULED: <{(test_time - relativedelta(months=1)).strftime('%Y-%m-%d %a %H:%M')} ++2m>
   body text here for test org node 4 - should not notify!
 * TODO Test org node 5
-  SCHEDULED: <{(now - timedelta(hours=1)).strftime('%Y-%m-%d %a %H:%M')} ++1h>
+  SCHEDULED: <{(test_time - timedelta(hours=1)).strftime('%Y-%m-%d %a %H:%M')} ++1h>
   body text here for test org node 5 - should notify
 * TODO Test org node 6
-  SCHEDULED: <{(now - timedelta(hours=1)).strftime('%Y-%m-%d %a %H:%M')} ++2h>
+  SCHEDULED: <{(test_time - timedelta(hours=1)).strftime('%Y-%m-%d %a %H:%M')} ++2h>
   body text here for test org node 6 - should not notify!
 * TODO Test org node 7
-  SCHEDULED: <{(now - relativedelta(years=1)).strftime('%Y-%m-%d %a %H:%M')} ++1y>
+  SCHEDULED: <{(test_time - relativedelta(years=1)).strftime('%Y-%m-%d %a %H:%M')} ++1y>
   body text here for test org node 7 - should notify
 * TODO Test org node 8
-  SCHEDULED: <{(now - relativedelta(years=1)).strftime('%Y-%m-%d %a %H:%M')} ++2y>
+  SCHEDULED: <{(test_time - relativedelta(years=1)).strftime('%Y-%m-%d %a %H:%M')} ++2y>
   body text here for test org node 8 - should not notify!
 * TODO Test org node 9
-  SCHEDULED: <{(now - timedelta(days=1)).strftime('%Y-%m-%d %a %H:%M')} ++1d>
+  SCHEDULED: <{(test_time - timedelta(days=1)).strftime('%Y-%m-%d %a %H:%M')} ++1d>
   body text here for test org node 9 - should notify
 * TODO Test org node 10
-  SCHEDULED: <{(now - timedelta(days=1)).strftime('%Y-%m-%d %a %H:%M')} ++2d>
+  SCHEDULED: <{(test_time - timedelta(days=1)).strftime('%Y-%m-%d %a %H:%M')} ++2d>
   body text here for test org node 10 - should not notify!
 * TODO Test org node 11
-  DEADLINE: <{(now + timedelta(weeks=1)).strftime('%Y-%m-%d %a %H:%M')} --1w>
+  DEADLINE: <{(test_time + timedelta(weeks=1)).strftime('%Y-%m-%d %a %H:%M')} --1w>
   body text here for test org node 11 - should not notify!
 * TODO Test org node 12
-  DEADLINE: <{(now + timedelta(weeks=1)).strftime('%Y-%m-%d %a %H:%M')} --2w>
+  DEADLINE: <{(test_time + timedelta(weeks=1)).strftime('%Y-%m-%d %a %H:%M')} --2w>
   body text here for test org node 12 - should not notify!
 * TODO Test org node 13
-  DEADLINE: <{(now + relativedelta(months=1)).strftime('%Y-%m-%d %a %H:%M')} --1m>
+  DEADLINE: <{(test_time + relativedelta(months=1)).strftime('%Y-%m-%d %a %H:%M')} --1m>
   body text here for test org node 13 - should not notify!
 * TODO Test org node 14
-  DEADLINE: <{(now + relativedelta(months=1)).strftime('%Y-%m-%d %a %H:%M')} --2m>
+  DEADLINE: <{(test_time + relativedelta(months=1)).strftime('%Y-%m-%d %a %H:%M')} --2m>
   body text here for test org node 14 - should not notify!
 * TODO Test org node 15
-  DEADLINE: <{(now + timedelta(hours=1)).strftime('%Y-%m-%d %a %H:%M')} --1h>
+  DEADLINE: <{(test_time + timedelta(hours=1)).strftime('%Y-%m-%d %a %H:%M')} --1h>
   body text here for test org node 15 - should notify
 * TODO Test org node 16
-  DEADLINE: <{(now + timedelta(hours=1)).strftime('%Y-%m-%d %a %H:%M')} --2h>
+  DEADLINE: <{(test_time + timedelta(hours=1)).strftime('%Y-%m-%d %a %H:%M')} --2h>
   body text here for test org node 16 - should not notify!
 * TODO Test org node 17
-  DEADLINE: <{(now + relativedelta(years=1)).strftime('%Y-%m-%d %a %H:%M')} --1y>
+  DEADLINE: <{(test_time + relativedelta(years=1)).strftime('%Y-%m-%d %a %H:%M')} --1y>
   body text here for test org node 17 - should not notify!
 * TODO Test org node 18
-  DEADLINE: <{(now + relativedelta(years=1)).strftime('%Y-%m-%d %a %H:%M')} --2y>
+  DEADLINE: <{(test_time + relativedelta(years=1)).strftime('%Y-%m-%d %a %H:%M')} --2y>
   body text here for test org node 18 - should not notify!
 * TODO Test org node 19
-  DEADLINE: <{(now + timedelta(days=1)).strftime('%Y-%m-%d %a %H:%M')} --1d>
+  DEADLINE: <{(test_time + timedelta(days=1)).strftime('%Y-%m-%d %a %H:%M')} --1d>
   body text here for test org node 19 - should notify
 * TODO Test org node 20
-  DEADLINE: <{(now + timedelta(days=1)).strftime('%Y-%m-%d %a %H:%M')} --2d>
+  DEADLINE: <{(test_time + timedelta(days=1)).strftime('%Y-%m-%d %a %H:%M')} --2d>
   body text here for test org node 20 - should notify
 * TODO Test org node 21
-  SCHEDULED: <{(now + timedelta(days=1)).strftime('%Y-%m-%d %a %H:%M')} --3d>
+  SCHEDULED: <{(test_time + timedelta(days=1)).strftime('%Y-%m-%d %a %H:%M')} --3d>
   body text here for test org node 21 - should not notify!
 * TODO Test org node 22
-  SCHEDULED: <{(now + timedelta(minutes=0)).strftime('%Y-%m-%d %a %H:%M')}>
+  SCHEDULED: <{(test_time + timedelta(minutes=0)).strftime('%Y-%m-%d %a %H:%M')}>
   body text here for test org node 22 - should notify
 * TODO Test org node 23
-  SCHEDULED: <{(now + timedelta(minutes=15)).strftime('%Y-%m-%d %a %H:%M')}>
+  SCHEDULED: <{(test_time + timedelta(minutes=15)).strftime('%Y-%m-%d %a %H:%M')}>
   body text here for test org node 23 - should not notify
 * TODO Test org node 24
-  SCHEDULED: <{(now + timedelta(minutes=30)).strftime('%Y-%m-%d %a %H:%M')}>
+  SCHEDULED: <{(test_time + timedelta(minutes=30)).strftime('%Y-%m-%d %a %H:%M')}>
   body text here for test org node 24 - should notify
 * TODO Test org node 25
-  SCHEDULED: <{(now + timedelta(minutes=45)).strftime('%Y-%m-%d %a %H:%M')}>
+  SCHEDULED: <{(test_time + timedelta(minutes=45)).strftime('%Y-%m-%d %a %H:%M')}>
   body text here for test org node 25 - should not notify!
 * TODO Test org node 26
-  SCHEDULED: <{(now + timedelta(minutes=60)).strftime('%Y-%m-%d %a %H:%M')}>
+  SCHEDULED: <{(test_time + timedelta(minutes=60)).strftime('%Y-%m-%d %a %H:%M')}>
   body text here for test org node 26 - should not notify!
 * TODO Test org node 27
-  DEADLINE: <{(now + timedelta(hours=6)).strftime('%Y-%m-%d %a %H:%M')}>
+  DEADLINE: <{(test_time + timedelta(hours=6)).strftime('%Y-%m-%d %a %H:%M')}>
   body text here for test org node 27 - should notify
 * TODO Test org node 28
-  DEADLINE: <{(now + timedelta(hours=24)).strftime('%Y-%m-%d %a %H:%M')}>
+  DEADLINE: <{(test_time + timedelta(hours=24)).strftime('%Y-%m-%d %a %H:%M')}>
   body text here for test org node 28 - should notify
 * TODO Test org node 29
-  DEADLINE: <{(now + timedelta(hours=48)).strftime('%Y-%m-%d %a %H:%M')}>
+  DEADLINE: <{(test_time + timedelta(hours=48)).strftime('%Y-%m-%d %a %H:%M')}>
   body text here for test org node 29 - should notify
 * TODO Test org node 30
-  DEADLINE: <{(now + timedelta(hours=0)).strftime('%Y-%m-%d %a %H:%M')}>
+  DEADLINE: <{(test_time + timedelta(hours=0)).strftime('%Y-%m-%d %a %H:%M')}>
   body text here for test org node 30 - should notify
+* TODO Test org node 31
+  <{(test_time + timedelta(hours=0)).strftime('%Y-%m-%d %a %H:%M')}>
+  body text here for test org node 31 - should notify
+* TODO Test org node 32
+  <{(test_time + timedelta(minutes=30)).strftime('%Y-%m-%d %a %H:%M')}>
+  body text here for test org node 32 - should notify
+* TODO Test org node 33
+  <{(test_time + timedelta(minutes=25)).strftime('%Y-%m-%d %a %H:%M')}>
+  <{(test_time + timedelta(minutes=30)).strftime('%Y-%m-%d %a %H:%M')}>
+  <{(test_time + timedelta(minutes=50)).strftime('%Y-%m-%d %a %H:%M')}>
+  body text here for test org node 33 - should notify
+* TODO Test org node 34
+  <{(test_time + timedelta(minutes=25)).strftime('%Y-%m-%d %a %H:%M')}>
+  <{(test_time + timedelta(minutes=31)).strftime('%Y-%m-%d %a %H:%M')}>
+  <{(test_time + timedelta(minutes=50)).strftime('%Y-%m-%d %a %H:%M')}>
+  body text here for test org node 34 - should not notify
+* TODO Test org node 35
+  [{(test_time + timedelta(minutes=0)).strftime('%Y-%m-%d %a %H:%M')}]
+  [{(test_time + timedelta(minutes=15)).strftime('%Y-%m-%d %a %H:%M')}]
+  [{(test_time + timedelta(minutes=30)).strftime('%Y-%m-%d %a %H:%M')}]
+  body text here for test org node 35 - should not notify
 """
     file_path = temp_dir / "test.org"
+    _ = file_path.write_text(org_content)
+    return file_path
+
+
+@pytest.fixture
+def test_early_notification_bug(temp_dir: Path) -> Path:
+    test_time: datetime = datetime(year=2025, month=2, day=14)
+    org_content: str = f"""
+* TODO Test bug org node 1
+  SCHEDULED: <{(test_time).strftime('%Y-%m-%d %a')} 11:30>
+  body text here for test org node 1 - should not notify
+"""
+    file_path = temp_dir / "notif_bug.org"
     _ = file_path.write_text(org_content)
     return file_path
 
@@ -152,17 +185,19 @@ def test_parse_file(test_org_file: Path):
 
 def test_get_valid_nodes(test_org_file: Path):
     node = parse_file(path=test_org_file)
-    assert len(get_valid_nodes(node)) == 30
+    assert len(get_valid_nodes(node)) == 35
 
 
-def test_node_for_notification(test_org_file: Path, now: datetime):
+def test_node_for_notification(test_org_file: Path, test_time: datetime):
     org_tree_root: OrgRootNode = parse_file(path=test_org_file)
+    valid_nodes: list[OrgNode] = get_valid_nodes(org_tree_root)
+    [print(f"{ x.heading }, { x.datelist }, { x.has_date() }") for x in valid_nodes]
     intervals: dict[str, list[timedelta]] = {
         "scheduled": generate_scheduled_notification_intervals(),
         "deadline": generate_deadline_notification_intervals(),
     }
     nodes: list[OrgNode] = nodes_for_notification(
-        time=now, node=org_tree_root, reminder_intervals=intervals
+        time=test_time, node=org_tree_root, reminder_intervals=intervals
     )
     assert any("Test org node 1" == node.heading for node in nodes)
     assert not any("Test org node 2" == node.heading for node in nodes)
@@ -194,3 +229,24 @@ def test_node_for_notification(test_org_file: Path, now: datetime):
     assert any("Test org node 28" == node.heading for node in nodes)
     assert any("Test org node 29" == node.heading for node in nodes)
     assert any("Test org node 30" == node.heading for node in nodes)
+    assert any("Test org node 31" == node.heading for node in nodes)
+    assert any("Test org node 32" == node.heading for node in nodes)
+    assert any("Test org node 33" == node.heading for node in nodes)
+    assert not any("Test org node 34" == node.heading for node in nodes)
+    assert not any("Test org node 35" == node.heading for node in nodes)
+
+
+def test_notification_bug(test_early_notification_bug: Path):
+    test_time: datetime = datetime(year=2025, month=2, day=13, hour=23, minute=30)
+    org_tree_root: OrgRootNode = parse_file(path=test_early_notification_bug)
+    intervals: dict[str, list[timedelta]] = {
+        "scheduled": generate_scheduled_notification_intervals(),
+        "deadline": generate_deadline_notification_intervals(),
+    }
+    nodes: list[OrgNode] = nodes_for_notification(
+        time=test_time, node=org_tree_root, reminder_intervals=intervals
+    )
+    valid_nodes = get_valid_nodes(org_tree_root)
+    assert len(valid_nodes) == 1
+    print(valid_nodes)
+    assert not any("Test bug org node 1" == node.heading for node in nodes)

@@ -188,6 +188,19 @@ def nodes_for_notification(
             deadline_notification_precise_times,
         )
     )
+    matching_plain_timestamp_nodes: list[OrgNode] = list(
+        filter(
+            lambda x: any(
+                coerce_datetime(y.start).replace(second=0, microsecond=0)
+                in scheduled_notification_times
+                for y in x.get_timestamps(active=True, range=True, point=True)
+            ),
+            filter(
+                lambda x: x.get_timestamps(active=True, range=True, point=True),
+                valid_nodes,
+            ),
+        )
+    )
     matching_scheduled_nodes: list[OrgNode] = list(
         filter(
             lambda x: coerce_datetime(x.scheduled.start).replace(
@@ -239,7 +252,7 @@ def nodes_for_notification(
     )
     # matching_deadline_warning_and_repeater_nodes: list[OrgNode] = list(
     #     filter(
-    #         lambda x: 
+    #         lambda x:
     #             is_in_series(
     #                 series_basis=coerce_datetime(x.deadline.start),
     #                 interval=-repeater_to_interval(x.deadline._warning),
@@ -262,6 +275,7 @@ def nodes_for_notification(
         + matching_deadline_nodes
         + matching_deadline_only_warning_nodes
         # + matching_deadline_warning_and_repeater_nodes
+        + matching_plain_timestamp_nodes
     )
     return all_matching_nodes
 
