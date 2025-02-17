@@ -223,7 +223,10 @@ def node_and_time_for_notification(
                 ),
                 filter(
                     lambda x: x.get_timestamps(active=True, range=True, point=True),
-                    valid_nodes,
+                    filter(
+                        lambda x: x._todo not in x.env.done_keys,
+                        valid_nodes,
+                    ),
                 ),
             ),
         )
@@ -239,7 +242,10 @@ def node_and_time_for_notification(
                 filter(
                     lambda x: x.scheduled.start is not None
                     and x.scheduled._repeater is None,
-                    valid_nodes,
+                    filter(
+                        lambda x: x._todo not in x.env.done_keys,
+                        valid_nodes,
+                    ),
                 ),
             ),
         )
@@ -255,7 +261,10 @@ def node_and_time_for_notification(
                 filter(
                     lambda x: x.deadline.start is not None
                     and x.deadline._warning is None,
-                    valid_nodes,
+                    filter(
+                        lambda x: x._todo not in x.env.done_keys,
+                        valid_nodes,
+                    ),
                 ),
             ),
         )
@@ -273,7 +282,10 @@ def node_and_time_for_notification(
                 filter(
                     lambda x: (x.deadline._warning is not None)
                     and (x.deadline._repeater is None),
-                    valid_nodes,
+                    filter(
+                        lambda x: x._todo not in x.env.done_keys,
+                        valid_nodes,
+                    ),
                 ),
             ),
         )
@@ -293,7 +305,10 @@ def node_and_time_for_notification(
                     check_dates=scheduled_notification_times,
                 )
                 == True,
-                filter(lambda x: x.scheduled._repeater is not None, valid_nodes),
+                filter(
+                    lambda x: x.scheduled._repeater is not None,
+                    filter(lambda x: x._todo not in x.env.done_keys, valid_nodes),
+                ),
             ),
         )
     )
