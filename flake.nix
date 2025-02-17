@@ -59,7 +59,6 @@
                 ];
                 env-vars = {
                     NTFY_URL  = builtins.getEnv "NTFY_URL";
-                    ORG_BASEDIR = builtins.getEnv "ORG_BASEDIR";
                 };
                 git-url-path = "dtvillafana/org-notifier.git"; # WARNING: replace this with your own
                 git-url = "github.com"; # WARNING: replace this with your own
@@ -85,7 +84,7 @@
                                         etc."org-notifier/service-vars" = {
                                             # Source path is relative to the Nix store
                                             text = ''NTFY_URL="${env-vars.NTFY_URL}"
-ORG_BASEDIR="${env-vars.ORG_BASEDIR}"'';
+ORG_BASEDIR="/home/master/git-repos/orgfiles"'';
                                             # Set appropriate permissions
                                             mode = "0600";
                                             user = "master";
