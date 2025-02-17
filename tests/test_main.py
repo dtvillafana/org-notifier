@@ -10,7 +10,7 @@ from src.main import (
     generate_deadline_notification_intervals,
     generate_scheduled_notification_intervals,
     get_valid_nodes,
-    nodes_for_notification,
+    node_and_time_for_notification,
     parse_file,
 )
 
@@ -196,44 +196,44 @@ def test_node_for_notification(test_org_file: Path, test_time: datetime):
         "scheduled": generate_scheduled_notification_intervals(),
         "deadline": generate_deadline_notification_intervals(),
     }
-    nodes: list[OrgNode] = nodes_for_notification(
+    nodes: list[tuple[OrgNode, datetime]] = node_and_time_for_notification(
         time=test_time, node=org_tree_root, reminder_intervals=intervals
     )
-    assert any("Test org node 1" == node.heading for node in nodes)
-    assert not any("Test org node 2" == node.heading for node in nodes)
-    assert any("Test org node 3" == node.heading for node in nodes)
-    assert not any("Test org node 4" == node.heading for node in nodes)
-    assert any("Test org node 5" == node.heading for node in nodes)
-    assert not any("Test org node 6" == node.heading for node in nodes)
-    assert any("Test org node 7" == node.heading for node in nodes)
-    assert not any("Test org node 8" == node.heading for node in nodes)
-    assert any("Test org node 9" == node.heading for node in nodes)
-    assert not any("Test org node 10" == node.heading for node in nodes)
-    assert not any("Test org node 11" == node.heading for node in nodes)
-    assert not any("Test org node 12" == node.heading for node in nodes)
-    assert not any("Test org node 13" == node.heading for node in nodes)
-    assert not any("Test org node 14" == node.heading for node in nodes)
-    assert any("Test org node 15" == node.heading for node in nodes)
-    assert not any("Test org node 16" == node.heading for node in nodes)
-    assert not any("Test org node 17" == node.heading for node in nodes)
-    assert not any("Test org node 18" == node.heading for node in nodes)
-    assert any("Test org node 19" == node.heading for node in nodes)
-    assert any("Test org node 20" == node.heading for node in nodes)
-    assert not any("Test org node 21" == node.heading for node in nodes)
-    assert any("Test org node 22" == node.heading for node in nodes)
-    assert any("Test org node 23" == node.heading for node in nodes)
-    assert any("Test org node 24" == node.heading for node in nodes)
-    assert not any("Test org node 25" == node.heading for node in nodes)
-    assert not any("Test org node 26" == node.heading for node in nodes)
-    assert any("Test org node 27" == node.heading for node in nodes)
-    assert any("Test org node 28" == node.heading for node in nodes)
-    assert any("Test org node 29" == node.heading for node in nodes)
-    assert any("Test org node 30" == node.heading for node in nodes)
-    assert any("Test org node 31" == node.heading for node in nodes)
-    assert any("Test org node 32" == node.heading for node in nodes)
-    assert any("Test org node 33" == node.heading for node in nodes)
-    assert not any("Test org node 34" == node.heading for node in nodes)
-    assert not any("Test org node 35" == node.heading for node in nodes)
+    assert any("Test org node 1" == node[0].heading for node in nodes)
+    assert not any("Test org node 2" == node[0].heading for node in nodes)
+    assert any("Test org node 3" == node[0].heading for node in nodes)
+    assert not any("Test org node 4" == node[0].heading for node in nodes)
+    assert any("Test org node 5" == node[0].heading for node in nodes)
+    assert not any("Test org node 6" == node[0].heading for node in nodes)
+    assert any("Test org node 7" == node[0].heading for node in nodes)
+    assert not any("Test org node 8" == node[0].heading for node in nodes)
+    assert any("Test org node 9" == node[0].heading for node in nodes)
+    assert not any("Test org node 10" == node[0].heading for node in nodes)
+    assert not any("Test org node 11" == node[0].heading for node in nodes)
+    assert not any("Test org node 12" == node[0].heading for node in nodes)
+    assert not any("Test org node 13" == node[0].heading for node in nodes)
+    assert not any("Test org node 14" == node[0].heading for node in nodes)
+    assert any("Test org node 15" == node[0].heading for node in nodes)
+    assert not any("Test org node 16" == node[0].heading for node in nodes)
+    assert not any("Test org node 17" == node[0].heading for node in nodes)
+    assert not any("Test org node 18" == node[0].heading for node in nodes)
+    assert any("Test org node 19" == node[0].heading for node in nodes)
+    assert any("Test org node 20" == node[0].heading for node in nodes)
+    assert not any("Test org node 21" == node[0].heading for node in nodes)
+    assert any("Test org node 22" == node[0].heading for node in nodes)
+    assert any("Test org node 23" == node[0].heading for node in nodes)
+    assert any("Test org node 24" == node[0].heading for node in nodes)
+    assert not any("Test org node 25" == node[0].heading for node in nodes)
+    assert not any("Test org node 26" == node[0].heading for node in nodes)
+    assert any("Test org node 27" == node[0].heading for node in nodes)
+    assert any("Test org node 28" == node[0].heading for node in nodes)
+    assert any("Test org node 29" == node[0].heading for node in nodes)
+    assert any("Test org node 30" == node[0].heading for node in nodes)
+    assert any("Test org node 31" == node[0].heading for node in nodes)
+    assert any("Test org node 32" == node[0].heading for node in nodes)
+    assert any("Test org node 33" == node[0].heading for node in nodes)
+    assert not any("Test org node 34" == node[0].heading for node in nodes)
+    assert not any("Test org node 35" == node[0].heading for node in nodes)
 
 
 def test_notification_bug(test_early_notification_bug: Path):
@@ -243,10 +243,10 @@ def test_notification_bug(test_early_notification_bug: Path):
         "scheduled": generate_scheduled_notification_intervals(),
         "deadline": generate_deadline_notification_intervals(),
     }
-    nodes: list[OrgNode] = nodes_for_notification(
+    nodes: list[tuple[OrgNode, datetime]] = node_and_time_for_notification(
         time=test_time, node=org_tree_root, reminder_intervals=intervals
     )
     valid_nodes = get_valid_nodes(org_tree_root)
     assert len(valid_nodes) == 1
     print(valid_nodes)
-    assert not any("Test bug org node 1" == node.heading for node in nodes)
+    assert not any("Test bug org node 1" == node[0].heading for node in nodes)
