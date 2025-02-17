@@ -59,7 +59,7 @@ def send_ntfy(
         url,
         data=notification.message,
         headers={
-            "Title": f"{notification.title} {f'(in {abs(minutes_until)} minutes)' if minutes_until != 0 else ''}",
+            "Title": f"{notification.title} {f'(in {abs(minutes_until)} minutes)' if minutes_until > 1 else f'{notification.title} (now)'}",
             "Priority": notification.priority,
             "Tags": notification.tags,
         },
