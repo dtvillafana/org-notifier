@@ -9,6 +9,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta, date
 from dateutil.relativedelta import relativedelta
 from pathlib import Path
+import itertools
 
 
 @dataclass
@@ -32,6 +33,10 @@ class Config:
         )
 
 
+def flatmap(list_of_lists: list[list[Any]]) -> list[Any]:
+    return list(itertools.chain.from_iterable(list_of_lists))
+
+
 def generate_scheduled_notification_intervals() -> list[timedelta]:
     return [timedelta(minutes=0), timedelta(minutes=15), timedelta(minutes=30)]
 
@@ -46,8 +51,10 @@ def generate_deadline_notification_intervals() -> list[timedelta]:
     ]
 
 
-def send_ntfy(notification: Notification, url: str) -> requests.Response:
-    minutes_until: int = int((notification.time - datetime.now()).total_seconds() // 60)
+def send_ntfy(
+    notification: Notification, url: str, time: datetime
+) -> requests.Response:
+    minutes_until: int = int((notification.time - time).total_seconds() // 60)
     resp: requests.Response = requests.post(
         url,
         data=notification.message,
@@ -60,19 +67,21 @@ def send_ntfy(notification: Notification, url: str) -> requests.Response:
     return resp
 
 
-def node_to_notification(node: OrgNode) -> Notification:
+def generate_notification(node: OrgNode, time: datetime) -> Notification:
     priority_map: dict[str | None, str] = {"A": "urgent", None: "default"}
     return Notification(
         title=node.heading,
         priority=priority_map[node.priority],
         tags=",".join(node.tags),
         message=node.body if node.body.strip() else node.heading,
-        time=coerce_datetime(node.scheduled.start),
+        time=time,
     )
 
 
-def send_notification(node: Notification, url: str) -> requests.Response:
-    resp = send_ntfy(node, url=url)
+def send_notification(
+    node: Notification, url: str, time: datetime
+) -> requests.Response:
+    resp = send_ntfy(notification=node, url=url, time=time)
     return resp
 
 
@@ -166,9 +175,10 @@ def get_valid_nodes(node: OrgRootNode) -> list[OrgNode]:
     return valid_nodes
 
 
-def nodes_for_notification(
+def node_and_time_for_notification(
     time: datetime, node: OrgRootNode, reminder_intervals: dict[str, list[timedelta]]
-) -> list[OrgNode]:
+) -> list[tuple[OrgNode, datetime]]:
+    """The reason we return a list of tuples here instead of just the node is because the generate notification function needs a time in the notification"""
     valid_nodes: list[OrgNode] = get_valid_nodes(node)
     scheduled_notification_precise_times: list[datetime] = list(
         map(lambda x: time + x, reminder_intervals["scheduled"])
@@ -188,66 +198,103 @@ def nodes_for_notification(
             deadline_notification_precise_times,
         )
     )
-    matching_plain_timestamp_nodes: list[OrgNode] = list(
-        filter(
-            lambda x: any(
-                coerce_datetime(y.start).replace(second=0, microsecond=0)
-                in scheduled_notification_times
-                for y in x.get_timestamps(active=True, range=True, point=True)
+    matching_plain_timestamp_nodes: list[tuple[OrgNode, datetime]] = list(
+        map(
+            lambda x: (
+                x,
+                coerce_datetime(
+                    min(
+                        filter(
+                            lambda x: coerce_datetime(x.start).replace(
+                                second=0, microsecond=0
+                            )
+                            in scheduled_notification_times,
+                            x.get_timestamps(active=True, range=True, point=True),
+                        ),
+                        key=lambda x: coerce_datetime(x.start),
+                    ).start
+                ),
             ),
             filter(
-                lambda x: x.get_timestamps(active=True, range=True, point=True),
-                valid_nodes,
+                lambda x: any(
+                    coerce_datetime(y.start).replace(second=0, microsecond=0)
+                    in scheduled_notification_times
+                    for y in x.get_timestamps(active=True, range=True, point=True)
+                ),
+                filter(
+                    lambda x: x.get_timestamps(active=True, range=True, point=True),
+                    valid_nodes,
+                ),
             ),
         )
     )
-    matching_scheduled_nodes: list[OrgNode] = list(
-        filter(
-            lambda x: coerce_datetime(x.scheduled.start).replace(
-                second=0, microsecond=0
-            )
-            in scheduled_notification_times,
+    matching_scheduled_nodes: list[tuple[OrgNode, datetime]] = list(
+        map(
+            lambda x: (x, coerce_datetime(x.scheduled.start)),
             filter(
-                lambda x: x.scheduled.start is not None
-                and x.scheduled._repeater is None,
-                valid_nodes,
+                lambda x: coerce_datetime(x.scheduled.start).replace(
+                    second=0, microsecond=0
+                )
+                in scheduled_notification_times,
+                filter(
+                    lambda x: x.scheduled.start is not None
+                    and x.scheduled._repeater is None,
+                    valid_nodes,
+                ),
             ),
         )
     )
-    matching_deadline_nodes: list[OrgNode] = list(
-        filter(
-            lambda x: coerce_datetime(x.deadline.start).replace(second=0, microsecond=0)
-            in deadline_notification_times,
+    matching_deadline_nodes: list[tuple[OrgNode, datetime]] = list(
+        map(
+            lambda x: (x, coerce_datetime(x.deadline.start)),
             filter(
-                lambda x: x.deadline.start is not None and x.deadline._warning is None,
-                valid_nodes,
+                lambda x: coerce_datetime(x.deadline.start).replace(
+                    second=0, microsecond=0
+                )
+                in deadline_notification_times,
+                filter(
+                    lambda x: x.deadline.start is not None
+                    and x.deadline._warning is None,
+                    valid_nodes,
+                ),
             ),
         )
     )
-    matching_deadline_only_warning_nodes: list[OrgNode] = list(
-        filter(
-            lambda x: is_in_series(
-                series_basis=coerce_datetime(x.deadline.start),
-                interval=-repeater_to_interval(x.deadline._warning),
-                check_dates=deadline_notification_times,
-            )
-            == True,
+    matching_deadline_only_warning_nodes: list[tuple[OrgNode, datetime]] = list(
+        map(
+            lambda x: (x, coerce_datetime(x.deadline.start)),
             filter(
-                lambda x: (x.deadline._warning is not None)
-                and (x.deadline._repeater is None),
-                valid_nodes,
+                lambda x: is_in_series(
+                    series_basis=coerce_datetime(x.deadline.start),
+                    interval=-repeater_to_interval(x.deadline._warning),
+                    check_dates=deadline_notification_times,
+                )
+                == True,
+                filter(
+                    lambda x: (x.deadline._warning is not None)
+                    and (x.deadline._repeater is None),
+                    valid_nodes,
+                ),
             ),
         )
     )
-    matching_scheduled_only_repeater_nodes: list[OrgNode] = list(
-        filter(
-            lambda x: is_in_series(
-                series_basis=coerce_datetime(x.scheduled.start),
-                interval=repeater_to_interval(x.scheduled._repeater),
-                check_dates=scheduled_notification_times,
-            )
-            == True,
-            filter(lambda x: x.scheduled._repeater is not None, valid_nodes),
+    matching_scheduled_only_repeater_nodes: list[tuple[OrgNode, datetime]] = list(
+        map(
+            lambda x: (
+                x,
+                coerce_datetime(x.scheduled.start).replace(
+                    year=time.year, month=time.month, day=time.day
+                ),
+            ),
+            filter(
+                lambda x: is_in_series(
+                    series_basis=coerce_datetime(x.scheduled.start),
+                    interval=repeater_to_interval(x.scheduled._repeater),
+                    check_dates=scheduled_notification_times,
+                )
+                == True,
+                filter(lambda x: x.scheduled._repeater is not None, valid_nodes),
+            ),
         )
     )
     # matching_deadline_warning_and_repeater_nodes: list[OrgNode] = list(
@@ -269,7 +316,7 @@ def nodes_for_notification(
     #     )
     # )
     # print([x.heading for x in matching_deadline_warning_and_repeater_nodes])
-    all_matching_nodes: list[OrgNode] = (
+    all_matching_nodes: list[tuple[OrgNode, datetime]] = (
         matching_scheduled_only_repeater_nodes
         + matching_scheduled_nodes
         + matching_deadline_nodes
@@ -287,13 +334,13 @@ def parse_and_send(file: Path, time: datetime, url: str) -> list[requests.Respon
         "scheduled": generate_scheduled_notification_intervals(),
         "deadline": generate_deadline_notification_intervals(),
     }
-    nodes: list[OrgNode] = nodes_for_notification(
+    nodes: list[tuple[OrgNode, datetime]] = node_and_time_for_notification(
         time=time, node=org_tree_root, reminder_intervals=intervals
     )
     notifications: list[Notification] = list(
-        map(lambda x: node_to_notification(x), nodes)
+        map(lambda x: generate_notification(x[0], x[1]), nodes)
     )
-    return list(map(lambda x: send_notification(x, url), notifications))
+    return list(map(lambda x: send_notification(x, url, time), notifications))
 
 
 def load_config(org_basedir: str, url: str) -> Config:
@@ -325,12 +372,15 @@ def main(url: str, org_basedir: str):
             )
         )
         now: datetime = datetime.now()
-        _ = list(
-            map(
-                lambda x: parse_and_send(file=x, time=now, url=config.ntfy_url),
-                org_files,
+        responses: list[list[requests.Response]] = flatmap(
+            list(
+                map(
+                    lambda x: parse_and_send(file=x, time=now, url=config.ntfy_url),
+                    org_files,
+                )
             )
         )
+        print([x.text for x in responses])
 
 
 if __name__ == "__main__":
