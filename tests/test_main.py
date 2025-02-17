@@ -150,6 +150,12 @@ def test_org_file(temp_dir: Path, test_time: datetime) -> Path:
   [{(test_time + timedelta(minutes=15)).strftime('%Y-%m-%d %a %H:%M')}]
   [{(test_time + timedelta(minutes=30)).strftime('%Y-%m-%d %a %H:%M')}]
   body text here for test org node 35 - should not notify
+* DONE Test org node 36
+  <{(test_time + timedelta(minutes=0)).strftime('%Y-%m-%d %a %H:%M')}>
+  body text here for test org node 36 - should not notify
+* DONE Test org node 37
+  SCHEDULED: <{(test_time + timedelta(minutes=0)).strftime('%Y-%m-%d %a %H:%M')}>
+  body text here for test org node 37 - should not notify
 """
     file_path = temp_dir / "test.org"
     _ = file_path.write_text(org_content)
@@ -185,7 +191,7 @@ def test_parse_file(test_org_file: Path):
 
 def test_get_valid_nodes(test_org_file: Path):
     node = parse_file(path=test_org_file)
-    assert len(get_valid_nodes(node)) == 35
+    assert len(get_valid_nodes(node)) == 37
 
 
 def test_node_for_notification(test_org_file: Path, test_time: datetime):
@@ -234,6 +240,8 @@ def test_node_for_notification(test_org_file: Path, test_time: datetime):
     assert any("Test org node 33" == node[0].heading for node in nodes)
     assert not any("Test org node 34" == node[0].heading for node in nodes)
     assert not any("Test org node 35" == node[0].heading for node in nodes)
+    assert not any("Test org node 36" == node[0].heading for node in nodes)
+    assert not any("Test org node 37" == node[0].heading for node in nodes)
 
 
 def test_notification_bug(test_early_notification_bug: Path):
