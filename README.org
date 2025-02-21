@@ -17,7 +17,8 @@
    - ssh access to this git repo
    - the correct keys replaced in the [[./ssh-keys]] directory
    - the values with warnings replaced in the flake
-   - the correct environment variables exported
+   - the correct environment variable exported
+     + NTFY_URL - url of ntfy endpoint
 ** building the docker image
    #+BEGIN_SRC bash
    nix build .#docker
