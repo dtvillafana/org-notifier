@@ -18,10 +18,11 @@
    - the correct keys replaced in the [[./ssh-keys]] directory
    - the values with warnings replaced in the flake
    - the correct environment variable exported
-     + NTFY_URL - url of ntfy endpoint
+     + NTFY_URL - ntfy url
 ** building the docker image
    #+BEGIN_SRC bash
-   nix build .#docker
+   export NTFY_URL="YOUR_NTFY_URL"
+   nix build .#docker --impure
    #+END_SRC
 ** load image into docker
    Ensure dockerd is running
