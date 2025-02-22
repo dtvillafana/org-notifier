@@ -312,31 +312,11 @@ def node_and_time_for_notification(
             ),
         )
     )
-    # matching_deadline_warning_and_repeater_nodes: list[OrgNode] = list(
-    #     filter(
-    #         lambda x:
-    #             is_in_series(
-    #                 series_basis=coerce_datetime(x.deadline.start),
-    #                 interval=-repeater_to_interval(x.deadline._warning),
-    #                 check_dates=deadline_notification_times,
-    #             )
-    #             == True
-    #
-    #         ,
-    #         filter(
-    #             lambda x: (x.deadline._warning is not None)
-    #             and (x.deadline._repeater is not None),
-    #             valid_nodes,
-    #         ),
-    #     )
-    # )
-    # print([x.heading for x in matching_deadline_warning_and_repeater_nodes])
     all_matching_nodes: list[tuple[OrgNode, datetime]] = (
         matching_scheduled_only_repeater_nodes
         + matching_scheduled_nodes
         + matching_deadline_nodes
         + matching_deadline_only_warning_nodes
-        # + matching_deadline_warning_and_repeater_nodes
         + matching_plain_timestamp_nodes
     )
     return all_matching_nodes

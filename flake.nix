@@ -161,6 +161,7 @@ User git
                                             after = [ "network.target" ];
                                             path = ["/run/current-system/sw"] ++ notifier-pkgs;
                                             serviceConfig = {
+                                                PassEnvironemnt = "*";
                                                 Type = "oneshot";
                                                 User = "master";
                                                 EnvironmentFile = [

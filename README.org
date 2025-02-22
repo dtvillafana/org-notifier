@@ -2,7 +2,40 @@
   - a notification program for org files using ntfy, see [[https://ntfy.sh][ntfy.sh]]
   - intended to be run on a minutely systemd timer
   - packaged with nix
-  - PRs welcome!
+  - There are plenty of features that are not fully fleshed out yet.
+  - PRs welcome with every issue!
+
+* Timestamps supported for notification
+  #+BEGIN_SRC org
+  * plain timestamps
+    <2025-02-22 Sat>
+  #+END_SRC
+
+
+  #+BEGIN_SRC org
+  * plain Scheduled timestamps
+    SCHEDULED: <2025-02-22 Sat>
+  #+END_SRC
+
+
+  #+BEGIN_SRC org
+  * Scheduled timestamps with a repeater
+    SCHEDULED: <2025-02-22 Sat ++1w>
+  #+END_SRC
+
+
+  #+BEGIN_SRC org
+  * plain deadline timestamps
+    DEADLINE: <2025-02-22 Sat>
+  #+END_SRC
+
+
+  #+BEGIN_SRC org
+  * deadline timestamps with a warning
+    DEADLINE: <2025-02-22 Sat -1d>
+  #+END_SRC
+
+
 * development
 ** starting a dev shell
    #+BEGIN_SRC bash
@@ -24,19 +57,41 @@
    export NTFY_URL="YOUR_NTFY_URL"
    nix build .#docker --impure
    #+END_SRC
-** load image into docker
+** run docker image locally
    Ensure dockerd is running
 
 
    Load into docker:
    #+BEGIN_SRC bash
-   docker import result/tarball/nixos-system-*.tar.xz nixos-docker
+   docker import result/tarball/nixos-system-*.tar.xz org-notifer
    #+END_SRC
    Boots into systemd
    #+BEGIN_SRC bash
-   docker run --privileged -it nixos-docker /init
+   docker run --privileged -it org-notifer /init
    #+END_SRC
    Log into the container
    #+BEGIN_SRC bash
    docker exec -it <container-name> /run/current-system/sw/bin/bash
+   #+END_SRC
+
+** push to dockerhub for personal use
+
+   Load into docker
+   #+BEGIN_SRC bash
+   docker import result/tarball/nixos-system-*.tar.xz org-notifer
+   #+END_SRC
+
+   Tag the image
+   #+BEGIN_SRC bash
+   docker tag org-notifer <your-dockerhub-username>/org-notifer:<tag>
+   #+END_SRC
+
+   Login to Docker Hub
+   #+BEGIN_SRC bash
+   docker login
+   #+END_SRC
+
+   Push the image to Docker Hub
+   #+BEGIN_SRC bash
+   docker push <your-dockerhub-username>/org-notifer:<tag>
    #+END_SRC
