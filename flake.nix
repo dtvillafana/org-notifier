@@ -74,7 +74,6 @@
                                     # Open necessary firewall ports (e.g., for SSH access to clone repositories)
                                     networking = {
                                         hostName = "nixos-org-notifier"; # Define your hostname.
-                                        # Disable DHCP on this interface
                                         useDHCP = true;
                                         firewall.allowedTCPPorts = [ 22 ];
                                     };
